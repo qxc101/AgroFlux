@@ -17,7 +17,7 @@ def generate_latex_table_with_highlights(csv_file, metric='R2'):
     
     # Define the features we want
     selected_features = ["Feature 3", "Feature 2", "Feature 16"]
-    selected_features_name = ["CO$^2$", "GPP", "N$_2$O"]
+    selected_features_name = ["CO$_2$", "GPP", "N$_2$O"]
     # Get unique values
     models = sorted(df['Model'].unique())
     subsets = sorted(df['Subset'].unique())
@@ -71,37 +71,83 @@ def generate_latex_table_with_highlights(csv_file, metric='R2'):
         "\\resizebox{\\textwidth}{!}{%"
     ]
     
-    # Create column specifications
-    col_spec = "l" + "c" * (len(subsets) * len(experiments) * len(selected_features))
+    # Create column specifications with vertical lines
+    # First column for model names, then add vertical lines for subsets and experiments
+    col_spec = "|l|"  # Start with left-aligned first column with vertical borders
+    
+    for subset_idx, subset in enumerate(subsets):
+        for exp_idx, experiment in enumerate(experiments):
+            # Add the selected features with vertical lines for each experiment
+            col_spec += "c" * len(selected_features)
+            # Add vertical line after each experiment (if not the last one)
+            if exp_idx < len(experiments) - 1 or subset_idx < len(subsets) - 1:
+                col_spec += "|"
+    
+    # Add final vertical line
+    col_spec += "|"
+    
     latex_code.append(f"\\begin{{tabular}}{{{col_spec}}}")
     latex_code.append("\\hline")
     
-    # Add header row with subsets
-    header = ["Model"]
+    # Add header row with subsets - make Model span all rows vertically
+    header_rows = 3  # Number of header rows
+    header = [f"\\multirow{{{header_rows}}}{{*}}{{Model}}"]
     for subset in subsets:
         col_span = len(experiments) * len(selected_features)
-        header.append(f"\\multicolumn{{{col_span}}}{{c}}{{{subset.upper()}}}")
+        header.append(f"\\multicolumn{{{col_span}}}{{|c|}}{{{subset.upper()}}}")
     latex_code.append(" & ".join(header) + " \\\\")
     
-    # Add sub-header row with experiment types
-    subheader = [""]
-    for subset in subsets:
-        for experiment in experiments:
+    # Add sub-header row with experiment types (without \hline after first header)
+    subheader = [""]  # Empty cell for the Model column which is already covered by multirow
+    for subset_idx, subset in enumerate(subsets):
+        for exp_idx, experiment in enumerate(experiments):
             col_span = len(selected_features)
-            subheader.append(f"\\multicolumn{{{col_span}}}{{c}}{{{experiment}}}")
+            # Add vertical line if it's not the first experiment in the subset
+            border_spec = "|c|" if exp_idx == len(experiments) - 1 else "|c"
+            # For the first experiment in the subset, use a different border specification
+            if exp_idx == 0:
+                border_spec = "c|"
+                
+            # Capitalize experiment names
+            display_experiment = experiment.capitalize()
+            subheader.append(f"\\multicolumn{{{col_span}}}{{{border_spec}}}{{{display_experiment}}}")
+    latex_code.append("\\cline{2-" + str(1 + len(subsets) * len(experiments) * len(selected_features)) + "}")
     latex_code.append(" & ".join(subheader) + " \\\\")
     
     # Add sub-sub-header row with feature types
-    subsubheader = [""]
-    for subset in subsets:
-        for experiment in experiments:
-            for feature in selected_features_name:
-                subsubheader.append(feature)
+    subsubheader = [""]  # Empty cell for the Model column which is already covered by multirow
+    for subset_idx, subset in enumerate(subsets):
+        for exp_idx, experiment in enumerate(experiments):
+            for feat_idx, feature in enumerate(selected_features_name):
+                # Add vertical line markers for appropriate cells
+                if feat_idx == 0 and exp_idx == 0:  # First feature in first experiment of a subset
+                    subsubheader.append(feature)
+                elif feat_idx == len(selected_features) - 1 and exp_idx == len(experiments) - 1:  # Last feature in last experiment
+                    subsubheader.append(feature)
+                else:
+                    subsubheader.append(feature)
+    latex_code.append("\\cline{2-" + str(1 + len(subsets) * len(experiments) * len(selected_features)) + "}")
     latex_code.append(" & ".join(subsubheader) + " \\\\ \\hline")
     
-    # Add data rows
+    # Add data rows with properly capitalized model names
     for model in models:
-        row = [model]
+        # Convert model name to proper display format
+        if model == "ealstm":
+            display_model = "EALSTM"
+        elif model == "itransformer":
+            display_model = "iTransformer"
+        elif model == "lstm":
+            display_model = "LSTM"
+        elif model == "pyraformer":
+            display_model = "Pyraformer"
+        elif model == "tcn":
+            display_model = "TCN"
+        elif model == "transformer":
+            display_model = "Transformer"
+        else:
+            display_model = model.capitalize()  # Fallback for any other model names
+        
+        row = [display_model]
         for subset in subsets:
             for experiment in experiments:
                 for feature in selected_features:

@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg') 
 import sys
 import os
 import torch
@@ -159,15 +161,15 @@ if __name__ == "__main__":
             pickle.dump(cached_results, f)
         print(f"Evaluation results saved to {cache_file}")
 
-    # Configure plot style
+    # Configure plot style with increased font sizes
     mpl.rcParams.update({
         'font.family': 'DejaVu Sans',
-        'font.size': 10,
-        'axes.labelsize': 11,
-        'axes.titlesize': 12,
-        'xtick.labelsize': 9,
-        'ytick.labelsize': 9,
-        'legend.fontsize': 9,
+        'font.size': 13,             # Increased from 10
+        'axes.labelsize': 14,        # Increased from 11
+        'axes.titlesize': 15,        # Increased from 12
+        'xtick.labelsize': 12,       # Increased from 9
+        'ytick.labelsize': 12,       # Increased from 9
+        'legend.fontsize': 12,       # Increased from 9
         'figure.dpi': 300
     })
     
@@ -217,7 +219,7 @@ if __name__ == "__main__":
         print(f"  Individual model R2: {module_metrics[0]:.4f}")
     
     # Create figure
-    fig, ax = plt.subplots(figsize=(5, 3.5))
+    fig, ax = plt.subplots(figsize=(6, 4))  # Slightly larger figure
     
     # Extract data for plotting
     modules = [item[0] for item in data]
@@ -228,17 +230,15 @@ if __name__ == "__main__":
     # Create x-axis labels with both module and feature names
     x_labels = [f"{m}\n({f})" for m, f in zip(modules, features)]
     
-    # Set width of bars and positions
-    bar_width = 0.2
-    index = np.arange(len(modules))
+    # Set width of bars and positions (reduced spacing between groups)
+    bar_width = 0.15                          # Made thinner (was 0.3)
+    index = np.arange(len(modules)) * 0.5    # Reduced spacing between groups
     
     # Create the bars
     bars1 = ax.bar(index - bar_width/2, r2_all, 
-                bar_width, label='All', color='#E1812C', edgecolor='black', linewidth=0.5,
-                )
+                bar_width, label='All', color='#E1812C', edgecolor='black', linewidth=0.5)
     bars2 = ax.bar(index + bar_width/2, r2_individual, 
-                bar_width, label='Individual', color='#3274A1', edgecolor='black', linewidth=0.5,
-                )
+                bar_width, label='Individual', color='#3274A1', edgecolor='black', linewidth=0.5)
     
     # Add labels
     ax.set_ylabel('R$^2$', labelpad=8)
@@ -246,7 +246,7 @@ if __name__ == "__main__":
     ax.set_xticklabels(x_labels)
     
     # Set y-axis limits
-    y_max = max(max(r2_all), max(r2_individual)) * 1.1
+    y_max = max(max(r2_all), max(r2_individual)) * 1.2
     ax.set_ylim(0, y_max)
     
     # Add border
@@ -257,7 +257,7 @@ if __name__ == "__main__":
     ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15),
               ncol=2, frameon=True, edgecolor='black')
     
-    # Add value labels
+    # Add value labels with increased font size
     def add_labels(bars):
         for bar in bars:
             height = bar.get_height()
@@ -266,7 +266,7 @@ if __name__ == "__main__":
                         xytext=(0, 2),
                         textcoords="offset points",
                         ha='center', va='bottom',
-                        fontsize=7)
+                        fontsize=9)  # Increased from 7
     
     add_labels(bars1)
     add_labels(bars2)
@@ -277,6 +277,11 @@ if __name__ == "__main__":
     # Tight layout
     plt.tight_layout(rect=[0, 0.05, 1, 0.95])
     
-    plt.savefig('performance_comparison.pdf', format='pdf', bbox_inches='tight', dpi=300)
-    plt.savefig('performance_comparison.png', dpi=300, bbox_inches='tight')
+    # Create figs directory if it doesn't exist
+    os.makedirs('figs', exist_ok=True)
+    
+    # Save the figure
+    plt.savefig('figs/performance_comparison.pdf', format='pdf', bbox_inches='tight', dpi=300)
+    plt.savefig('figs/performance_comparison.png', dpi=300, bbox_inches='tight')
+    
     plt.show()

@@ -28,7 +28,7 @@ def generate_latex_table_with_highlights(csv_file, metric='R2'):
     
     # Display names for features
     feature_names = {
-        "Feature 1": "N2O" if subset == "n2o" else "CO2",
+        "Feature 1": "N$_2$O" if subset == "n2o" else "CO$_2$",
         "Feature 2": "GPP"
     }
     
@@ -76,52 +76,85 @@ def generate_latex_table_with_highlights(csv_file, metric='R2'):
         "\\begin{table}[ht]",
         "\\centering",
         f"\\caption{{Model evaluation results on observation datasets in {metric}}}",
-        f"\\label{{tab:t1-model-evaluation-{metric.lower()}}}",
+        f"\\label{{tab:t1-model-evaluation-{metric.lower()}}}"
     ]
     
     # Calculate total columns - for each subset, we have experiment_count * feature_count columns
     n2o_cols = len(experiments) * len(subset_features['n2o'])
     co2_cols = len(experiments) * len(subset_features['co2'])
     
-    # Create column specifications
-    col_spec = "l" + "c" * (n2o_cols + co2_cols)
+    # Create column specifications with vertical lines
+    col_spec = "|l|"  # Start with left-aligned first column with vertical borders
+    
+    # CO2 features with vertical lines
+    for feature_idx, feature in enumerate(subset_features['co2']):
+        col_spec += "c" * len(experiments)
+        if feature_idx < len(subset_features['co2']) - 1:
+            col_spec += "|"  # Add vertical line between features
+    
+    # Add vertical line between CO2 and N2O sections
+    col_spec += "|"
+    
+    # N2O features
+    col_spec += "c" * n2o_cols + "|"  # Add vertical line at the end
+    
     latex_code.append(f"\\begin{{tabular}}{{{col_spec}}}")
     latex_code.append("\\hline")
     
-    # First header row - CO2 and N2O subsets (now with CO2 first)
+    # First header row with multirow for Model spanning 2 rows
+    header_rows = 2  # Number of header rows
+    header = [f"\\multirow{{{header_rows}}}{{*}}{{Model}}"]
     
-    # Second header row - feature names within subsets
-    subheader = ["Model"]
-    
-    # For CO2 (has feature 1 and 2) - now first
+    # For CO2 section (has feature 1 and 2)
     for feature in subset_features['co2']:
         feature_name = "CO$_2$" if feature == "Feature 1" else "GPP"
-        subheader.append(f"\\multicolumn{{{len(experiments)}}}{{c}}{{{feature_name}}}")
+        header.append(f"\\multicolumn{{{len(experiments)}}}{{|c|}}{{{feature_name}}}")
         
-    # For N2O (only has feature 1) - now second
-    subheader.append(f"\\multicolumn{{{len(experiments)}}}{{c}}{{N$_2$O}}")
+    # For N2O section (only has feature 1)
+    header.append(f"\\multicolumn{{{len(experiments)}}}{{|c|}}{{N$_2$O}}")
     
-    latex_code.append(" & ".join(subheader) + " \\\\")
+    latex_code.append(" & ".join(header) + " \\\\")
     
-    # Third header row - temporal and spatial for each feature
-    subsubheader = [""]
+    # Second header row - temporal and spatial for each feature
+    subheader = [""]  # Empty cell for the Model column which is already covered by multirow
     
-    # For CO2's features (now first)
+    # For CO2's features
     for feature in subset_features['co2']:
         for experiment in experiments:
-            subsubheader.append(f"{experiment}")
+            # Capitalize experiment names
+            display_experiment = experiment.capitalize()
+            subheader.append(display_experiment)
             
-    # For N2O's single feature (now second)
+    # For N2O's single feature
     for experiment in experiments:
-        subsubheader.append(f"{experiment}")
+        # Capitalize experiment names
+        display_experiment = experiment.capitalize()
+        subheader.append(display_experiment)
         
-    latex_code.append(" & ".join(subsubheader) + " \\\\ \\hline")
+    latex_code.append("\\cline{2-" + str(1 + co2_cols + n2o_cols) + "}")
+    latex_code.append(" & ".join(subheader) + " \\\\ \\hline")
     
-    # Add data rows
+    # Add data rows with properly capitalized model names
     for model in models:
-        row = [model]
+        # Convert model name to proper display format
+        if model == "ealstm":
+            display_model = "EALSTM"
+        elif model == "itransformer":
+            display_model = "iTransformer"
+        elif model == "lstm":
+            display_model = "LSTM"
+        elif model == "pyraformer":
+            display_model = "Pyraformer"
+        elif model == "tcn":
+            display_model = "TCN"
+        elif model == "transformer":
+            display_model = "Transformer"
+        else:
+            display_model = model.capitalize()  # Fallback for any other model names
         
-        # CO2 data (Feature 1 and Feature 2) - now first
+        row = [display_model]
+        
+        # CO2 data (Feature 1 and Feature 2)
         for feature in subset_features['co2']:
             for experiment in experiments:
                 value = calculate_avg_metric(model, 'co2', experiment, feature)
@@ -142,7 +175,7 @@ def generate_latex_table_with_highlights(csv_file, metric='R2'):
                     
                 row.append(formatted_value)
         
-        # N2O data (Feature 1 only) - now second
+        # N2O data (Feature 1 only)
         for experiment in experiments:
             feature = "Feature 1"  # N2O only has Feature 1
             value = calculate_avg_metric(model, 'n2o', experiment, feature)
@@ -168,7 +201,7 @@ def generate_latex_table_with_highlights(csv_file, metric='R2'):
     # Close the table
     latex_code.extend([
         "\\hline",
-        "\\end{tabular}%",
+        "\\end{tabular}",
         "\\end{table}"
     ])
     
