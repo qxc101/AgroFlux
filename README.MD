@@ -105,39 +105,7 @@ python generate_table_t2.py
 python generate_heatMap.py --metric R2 --county_file "county_metrics/Ecosys_99points.csv" --metrics_file "county_metrics/t0_mw_All_lstm_temporal_0_county_metrics.csv"
 ```
 
-## Results Analysis
 
-The framework provides tools to analyze model performance across:
-
-- Different machine learning architectures
-- Simulation vs. observational data
-- Geographical regions (counties across IL, IN, IA)
-- Different greenhouse gases and environmental variables
-- Transfer learning effectiveness
-
-## File Structure
-
-- **Training Scripts**:
-  - `train_all_t0.sh`: Train all T0 models
-  - `train_all_t1.sh`: Train all T1 models
-  - `train_all_t2.sh`: Train all T2 models with fine-tuning
-  - `train_all_t2_ad.sh`: Train all T2 models with adversarial domain adaptation
-
-- **Evaluation Scripts**:
-  - `generate_table_t0.py`: Create LaTeX tables for T0 model evaluations
-  - `generate_table_t1.py`: Create LaTeX tables for T1 model evaluations
-  - `generate_table_t2.py`: Create LaTeX tables for T2 model evaluations
-  - `generate_heatMap.py`: Generate county-level performance heatmaps
-
-## Dependencies
-
-- Python 3.7+
-- PyTorch
-- pandas
-- matplotlib
-- numpy
-- geopandas (optional, for advanced mapping)
-- shapely (optional, for advanced mapping)
 
 ## Citation
 
@@ -148,5 +116,13 @@ If you use this code in your research, please cite:
 ```
 
 ## License
+Shield: [![CC BY 4.0][cc-by-shield]][cc-by]
 
-[License information here]
+This work is licensed under a
+[Creative Commons Attribution 4.0 International License][cc-by].
+
+[![CC BY 4.0][cc-by-image]][cc-by]
+
+[cc-by]: http://creativecommons.org/licenses/by/4.0/
+[cc-by-image]: https://i.creativecommons.org/l/by/4.0/88x31.png
+[cc-by-shield]: https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg
