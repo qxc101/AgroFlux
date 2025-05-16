@@ -1,6 +1,6 @@
-# Environmental Transfer Learning Framework
+# AgroFlux: A Spatial-Temporal Benchmark for Carbon and Nitrogen Flux Prediction in Agricultural Ecosystems
 
-This repository contains a comprehensive framework for training, evaluating, and performing transfer learning on environmental data models, specifically focusing on CO₂, N₂O, and GPP (Gross Primary Production) predictions.
+This repository contains the official implementation of paper AgroFlux: A Spatial-Temporal Benchmark for Carbon and Nitrogen Flux Prediction in Agricultural Ecosystems. AgroFlux is comprehensive benchmark that contains data for training, evaluating, and performing transfer learning on machine learning models, specifically focusing on CO₂, N₂O, and GPP (Gross Primary Production) predictions.
 
 ## Overview
 
@@ -12,18 +12,9 @@ The framework implements multiple time series machine learning models to predict
   - Fine-tuning based transfer learning
   - Adversarial domain adaptation
 
-## Models Implemented
-
-- LSTM (Long Short-Term Memory)
-- EALSTM (Entity-Aware LSTM)
-- TCN (Temporal Convolutional Network)
-- Transformer
-- iTransformer
-- Pyraformer
-
 ## Datasets
 
-The framework works with several datasets:
+The framework works with several data categories:
 
 - **Simulation datasets (T0)**:
   - `mw`: Ecosys model simulations
@@ -45,6 +36,8 @@ Two experiment types are supported:
 ### Training Models
 
 #### T0 Models (Simulation Data)
+To reproduce the result for predicting simulated data in the paper, run the following bash command. 
+If you want to train individual models, tran the following python command.
 ```bash
 # Train all T0 models with full parameter sweep
 ./train_all_t0.sh
@@ -54,6 +47,8 @@ python train_t0.py --model "lstm" --subset "mw" --module "All" --task t0 --exp t
 ```
 
 #### T1 Models (Observation Data)
+To reproduce the result for predicting observation data in the paper, run the following bash command. 
+If you want to train individual models, tran the following python command.
 ```bash
 # Train all T1 models with full parameter sweep
 ./train_all_t1.sh
@@ -63,9 +58,11 @@ python train_t1.py --model "lstm" --subset "n2o" --module "All" --task t1 --exp 
 ```
 
 #### T2 Models (Transfer Learning)
+To reproduce the result for transfer learning in the paper, run the following two bash commands. 
+If you want to train individual models, tran the following python command.
 ```bash
 # Train all T2 models with fine-tuning approach
-./train_all_t2.sh
+./train_all_t2_ft.sh
 
 # Train all T2 models with adversarial domain adaptation
 ./train_all_t2_ad.sh
@@ -75,7 +72,8 @@ python train_t2.py --model "lstm" --t0_subset "mw" --t1_subset "n2o" --module "A
 ```
 
 ### Evaluation
-
+The above bash scripts (e.g. train_all_t0.sh, train_all_t1.sh...) already contains evaluations in the paper.
+However, if you want to evaluate individual models, use the following.
 ```bash
 # Evaluate T0 models
 python evaluate_t0.py --model "lstm" --subset "mw" --module "All" --task t0 --exp temporal --fold 0
