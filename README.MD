@@ -12,9 +12,18 @@ The framework implements multiple time series machine learning models to predict
   - Fine-tuning based transfer learning
   - Adversarial domain adaptation
 
+## Models Implemented
+
+- LSTM (Long Short-Term Memory)
+- EALSTM (Entity-Aware LSTM)
+- TCN (Temporal Convolutional Network)
+- Transformer
+- iTransformer
+- Pyraformer
+
 ## Datasets
 
-The framework works with several data categories:
+The framework works with several datasets:
 
 - **Simulation datasets (T0)**:
   - `mw`: Ecosys model simulations
@@ -32,12 +41,29 @@ Two experiment types are supported:
 - **Spatial**: Train and evaluate models using cross-validation across different spatial locations
 
 ## Usage
+### Download dataset
+Download the unzip the data files from:
+https://drive.google.com/drive/folders/1keaLQtcfsG_F9IeED9uDSN9P9SnhHsFQ?usp=sharing
+
+If you just want to use the data to do your own research, we also host this dataset on hugging face in format:
+https://huggingface.co/datasets/qic69/AgroFlux_1
+
+They are exactly the same data.
+
+### Creating Environment
+Create conda env using environment.yaml:
+```bash
+conda env create -f environment.yaml
+```
+
+Clone TSLib project into the models folder:
+https://github.com/thuml/Time-Series-Library.git
 
 ### Training Models
 
 #### T0 Models (Simulation Data)
 To reproduce the result for predicting simulated data in the paper, run the following bash command. 
-If you want to train individual models, tran the following python command.
+If you want to train individual models, run the following python command.
 ```bash
 # Train all T0 models with full parameter sweep
 ./train_all_t0.sh
@@ -48,7 +74,7 @@ python train_t0.py --model "lstm" --subset "mw" --module "All" --task t0 --exp t
 
 #### T1 Models (Observation Data)
 To reproduce the result for predicting observation data in the paper, run the following bash command. 
-If you want to train individual models, tran the following python command.
+If you want to train individual models, run the following python command.
 ```bash
 # Train all T1 models with full parameter sweep
 ./train_all_t1.sh
@@ -59,7 +85,7 @@ python train_t1.py --model "lstm" --subset "n2o" --module "All" --task t1 --exp 
 
 #### T2 Models (Transfer Learning)
 To reproduce the result for transfer learning in the paper, run the following two bash commands. 
-If you want to train individual models, tran the following python command.
+If you want to train individual models, run the following python command.
 ```bash
 # Train all T2 models with fine-tuning approach
 ./train_all_t2_ft.sh
@@ -88,6 +114,7 @@ python evaluate_t2.py --model "lstm" --t0_subset "mw" --t1_subset "n2o" --module
 ### Visualization
 
 #### Generate Evaluation Tables
+To reproduce the tables in the paper, use the following commands after running the training scripts in section Training Models above. 
 ```bash
 # Generate LaTeX tables of evaluation metrics for T0 models
 python generate_table_t0.py
@@ -100,11 +127,22 @@ python generate_table_t2.py
 ```
 
 #### Generate County Heatmaps
+To reproduce the heatmap in the paper, use the following commands. 
 ```bash
 # Generate heatmap of model performance by county
 python generate_heatMap.py --metric R2 --county_file "county_metrics/Ecosys_99points.csv" --metrics_file "county_metrics/t0_mw_All_lstm_temporal_0_county_metrics.csv"
 ```
 
+#### Generate Bar Chart
+To reproduce the model comparsion bar chart in the paper, use the following commands. 
+```bash
+# Generate heatmap of model performance by county
+python train_t0.py --model "lstm" --subset "mw" --module "Carbon" --task t0 --exp temporal --fold 0
+python train_t0.py --model "lstm" --subset "mw" --module "Nitrogen" --task t0 --exp temporal --fold 0
+python train_t0.py --model "lstm" --subset "mw" --module "Thermal" --task t0 --exp temporal --fold 0
+python train_t0.py --model "lstm" --subset "mw" --module "Water" --task t0 --exp temporal --fold 0
+python generate_heatMap.py --metric R2 --county_file "county_metrics/Ecosys_99points.csv" --metrics_file "county_metrics/t0_mw_All_lstm_temporal_0_county_metrics.csv"
+```
 
 
 ## Citation
