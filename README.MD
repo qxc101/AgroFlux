@@ -26,12 +26,12 @@ The framework implements multiple time series machine learning models to predict
 The framework works with several datasets:
 
 - **Simulation datasets (T0)**:
-  - `mw`: Ecosys model simulations
-  - `dc`: DC model simulations
+  - `mw`: Ecosys simulations
+  - `dc`: DayCent simulations
 
 - **Observation datasets (T1)**:
-  - `n2o`: Nitrous oxide field measurements
-  - `co2`: Carbon dioxide field measurements (includes GPP)
+  - `n2o`: Nitrous oxide flux field measurements
+  - `co2`: Carbon dioxide flux field measurements (includes GPP)
 
 ## Experiments
 
@@ -144,14 +144,13 @@ python train_t0.py --model "lstm" --subset "mw" --module "Water" --task t0 --exp
 python generate_heatMap.py --metric R2 --county_file "county_metrics/Ecosys_99points.csv" --metrics_file "county_metrics/t0_mw_All_lstm_temporal_0_county_metrics.csv"
 ```
 
+## Data Exploration
+Please refer to scale_data_t0.ipynb to see the plots and checks of the actual data. 
+Please note we already have the scaled data, and the scalers.
 
 ## Citation
 
-If you use this code in your research, please cite:
-
-```
-[Citation information here]
-```
+Citation will be added upon publication.
 
 ## License
 Shield: [![CC BY 4.0][cc-by-shield]][cc-by]
