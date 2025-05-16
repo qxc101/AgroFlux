@@ -46,7 +46,7 @@ Download the unzip the data files from:
 https://drive.google.com/drive/folders/1keaLQtcfsG_F9IeED9uDSN9P9SnhHsFQ?usp=sharing
 
 If you just want to use the data to do your own research, we also host this dataset on hugging face in format:
-https://huggingface.co/datasets/qic69/AgroFlux_1
+https://huggingface.co/datasets/qic69/AgroFlux
 
 They are exactly the same data.
 
